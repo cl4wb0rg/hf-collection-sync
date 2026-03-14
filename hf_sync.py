@@ -29,7 +29,7 @@ from huggingface_hub.utils import RepositoryNotFoundError, GatedRepoError
 # Konfiguration
 # ---------------------------------------------------------------------------
 
-COLLECTION_NAME = "LocalCache"   # Exakter oder teilweiser Name der Collection
+COLLECTION_NAME = os.environ.get("HF_COLLECTION", "LocalCache")  # überschreibbar per .env
 
 # Dateimuster, die NICHT heruntergeladen werden (None = alles herunterladen)
 # Entkommentieren um z.B. TF/Flax-Gewichte zu überspringen:
@@ -44,6 +44,9 @@ SCRIPT_DIR = Path(__file__).parent
 ENV_FILE    = SCRIPT_DIR / ".env"
 STATE_FILE  = SCRIPT_DIR / ".sync_state.json"
 LOG_FILE    = SCRIPT_DIR / "hf_sync.log"
+
+# .env früh laden, damit HF_COLLECTION bereits beim Modulstart verfügbar ist
+load_dotenv(ENV_FILE, override=True)
 
 logging.basicConfig(
     level=logging.INFO,

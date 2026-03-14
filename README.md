@@ -35,12 +35,14 @@ Get your token at <https://huggingface.co/settings/tokens> (read access is suffi
 
 ## Configuration
 
-Edit the constants at the top of `hf_sync.py`:
+Set these variables in your `.env` file:
 
 | Variable | Default | Description |
 |---|---|---|
-| `COLLECTION_NAME` | `"LocalCache"` | Exact or partial name of the HF collection |
-| `IGNORE_PATTERNS` | `None` | File globs to skip (e.g. TF/Flax weights) |
+| `HF_TOKEN` | — | HuggingFace API token (required) |
+| `HF_COLLECTION` | `LocalCache` | Exact or partial name of the HF collection |
+
+To skip certain file types, edit `IGNORE_PATTERNS` at the top of `hf_sync.py`:
 
 Example — skip non-PyTorch weights:
 

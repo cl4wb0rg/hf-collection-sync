@@ -1,0 +1,19 @@
+# Secrets
+.env
+
+# Runtime-Dateien
+.sync_state.json
+hf_sync.log
+
+# Modell-Verzeichnisse (lokal gecacht, nicht versioniert)
+*--*/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Editor / Tools
+.claude/
+.idea/
+.vscode/

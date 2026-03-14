@@ -1,0 +1,96 @@
+# hf-collection-sync
+
+Syncs all models from a named HuggingFace collection to a local directory.
+Updates are detected via commit SHA — already-current models are skipped without re-downloading.
+
+## How it works
+
+1. Authenticates with the HuggingFace API using your token
+2. Fetches the full collection (by name) from your account
+3. For each model, compares the remote commit SHA against the locally stored one
+4. Downloads or updates only what has changed
+
+Local directory layout mirrors the collection:
+
+```
+./mistralai--Mistral-7B-v0.1/
+./meta-llama--Llama-3-8B/
+...
+```
+
+State is persisted in `.sync_state.json` so interrupted runs resume cleanly.
+
+## Setup
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate        # Windows
+pip install -r requirements.txt
+
+cp .env.example .env
+# → edit .env and insert your HF_TOKEN
+```
+
+Get your token at <https://huggingface.co/settings/tokens> (read access is sufficient).
+
+## Configuration
+
+Edit the constants at the top of `hf_sync.py`:
+
+| Variable | Default | Description |
+|---|---|---|
+| `COLLECTION_NAME` | `"LocalCache"` | Exact or partial name of the HF collection |
+| `IGNORE_PATTERNS` | `None` | File globs to skip (e.g. TF/Flax weights) |
+
+Example — skip non-PyTorch weights:
+
+```python
+IGNORE_PATTERNS = ["*.msgpack", "flax_model*", "tf_model*", "rust_model*"]
+```
+
+## Usage
+
+```bash
+# Linux / macOS
+python hf_sync.py
+
+# Windows (uses the local .venv automatically)
+hf_sync.bat
+```
+
+Output:
+
+```
+============================================================
+HF LocalCache Sync  —  Collection: 'LocalCache'
+============================================================
+Angemeldet als: your-username
+Collection 'LocalCache': 6 Modelle
+[OK]       Qwen/Qwen3.5-0.8B  (sha 2fc06364…)
+[DOWNLOAD] Qwen/Qwen3.5-14B
+[UPDATE]   mistralai/Mistral-7B-v0.1  (abc12345… → def67890…)
+...
+============================================================
+Zusammenfassung:
+  Aktuell (übersprungen): 4
+  Neu heruntergeladen:    1
+  Aktualisiert:           1
+  Fehlgeschlagen:         0
+============================================================
+```
+
+A full log is written to `hf_sync.log` alongside the script.
+
+## Automating with Task Scheduler (Windows)
+
+Create a basic task that runs `hf_sync.bat` on a schedule — daily or on login.
+
+## Requirements
+
+- Python 3.11+
+- `huggingface_hub >= 0.24.0`
+- `python-dotenv >= 1.0.0`
+
+## License
+
+MIT — see [LICENSE](LICENSE)

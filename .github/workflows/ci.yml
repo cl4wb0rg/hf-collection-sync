@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dev tools
+        run: pip install ruff mypy huggingface_hub python-dotenv
+
+      - name: ruff check
+        run: ruff check hf_sync.py
+
+      - name: ruff format
+        run: ruff format --check hf_sync.py
+
+      - name: mypy
+        run: mypy hf_sync.py
